@@ -1,4 +1,4 @@
-package com.sharazan.security.authentication
+package com.sharazan.security.authentication.login
 
 import com.sharazan.security.core.AccountDetails
 import com.sharazan.security.core.Authentication

@@ -2,7 +2,7 @@ package com.sharazan.security.authentication.login
 
 import com.sharazan.security.PasswordEncoder
 import com.sharazan.security.authentication.AbstractAuthenticationProvider
-import com.sharazan.security.authentication.AccountAuthentication
+import com.sharazan.security.authentication.login.AccountAuthentication
 import com.sharazan.security.authentication.exception.BadCredentialsException
 import com.sharazan.security.core.AccountDetailsService
 import com.sharazan.security.core.Authentication

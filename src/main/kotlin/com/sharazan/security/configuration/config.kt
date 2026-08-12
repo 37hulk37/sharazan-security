@@ -1,6 +1,7 @@
 package com.sharazan.security.configuration
 
 import com.sharazan.core.AppBuilder
+import com.sharazan.core.Lifecycle
 import com.sharazan.core.pipeline.Phase
 import com.sharazan.security.PasswordEncoder
 import com.sharazan.security.authentication.AuthenticationInterceptor
@@ -18,7 +19,15 @@ import com.sharazan.security.authentication.login.BasicAuthenticationFilter
 import com.sharazan.security.authentication.login.DaoAuthenticationProvider
 import com.sharazan.security.authentication.login.LoginFormAuthenticationFilter
 import com.sharazan.security.authorization.AuthorizationFilter
+import com.sharazan.security.session.InMemorySessionStore
+import com.sharazan.security.session.SessionAuthenticationFilter
+import com.sharazan.security.session.SessionAuthenticationProvider
+import com.sharazan.security.session.SessionCookieInterceptor
+import com.sharazan.security.session.SessionEstablishingFilter
+import com.sharazan.security.session.SessionStore
 import com.sharazan.http.core.Controller
+import com.sharazan.security.authentication.jwt.JwtAuthenticationFilter
+import org.koin.core.scope.get
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -29,7 +38,10 @@ fun AppBuilder.security(configure: HttpSecurity.() -> Unit = {}) = apply {
         single { DaoAuthenticationProvider(get(), get()) } bind AuthenticationProvider::class
         single { JwtAuthenticationProvider(get()) } bind AuthenticationProvider::class
         single { AnonymousAuthenticationProvider() } bind AuthenticationProvider::class
+        single { SessionAuthenticationProvider() } bind AuthenticationProvider::class
         single { AuthenticationManager(getAll()) }
+
+        single { InMemorySessionStore() } bind SessionStore::class
 
         single {
             val registry = SecurityEndpointRegistry(getAll<Controller>())
@@ -38,16 +50,24 @@ fun AppBuilder.security(configure: HttpSecurity.() -> Unit = {}) = apply {
         }
 
         single { AnonymousFilter() } bind RequestFilter::class
-        single { BasicAuthenticationFilter() } bind RequestFilter::class
-        single { LoginFormAuthenticationFilter() } bind RequestFilter::class
-        single { AuthenticationFilter(get()) } bind RequestFilter::class
-        single { AuthorizationFilter(get()) }
+        //single { SessionAuthenticationFilter(get()) } bind RequestFilter::class
+        //single { BasicAuthenticationFilter() } bind RequestFilter::class
+        //single { LoginFormAuthenticationFilter() } bind RequestFilter::class
+        //single { AuthenticationFilter(get()) } bind RequestFilter::class
+        //single { SessionEstablishingFilter(get()) } bind RequestFilter::class
+        single { AuthorizationFilter(get()) } bind RequestFilter::class
+        single { JwtAuthenticationFilter(get()) } bind RequestFilter::class
+
+        //single { SessionCookieInterceptor() }
 
         single { AuthenticationInterceptor(listOf(
+           // get<SessionAuthenticationFilter>(),
+            //get<BasicAuthenticationFilter>(),
+            //get<LoginFormAuthenticationFilter>(),
+            //get<JwtAuthenticationFilter>(),
             get<AnonymousFilter>(),
-            get<BasicAuthenticationFilter>(),
-            get<LoginFormAuthenticationFilter>(),
             get<AuthenticationFilter>(),
+            //get<SessionEstablishingFilter>(),
         )) }
 
         single { AuthorizationManager(get()) }
@@ -55,7 +75,7 @@ fun AppBuilder.security(configure: HttpSecurity.() -> Unit = {}) = apply {
             get<AuthorizationFilter>()
         )) }
 
-        single { Phase("authentication", listOf(get<AuthenticationInterceptor>())) }
+        single { Phase("authentication", listOf(get<AuthenticationInterceptor>(), get<SessionCookieInterceptor>())) }
         single { Phase("authorization", listOf(get<AuthorizationInterceptor>())) }
     }
 

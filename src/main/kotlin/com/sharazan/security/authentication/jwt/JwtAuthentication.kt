@@ -5,11 +5,11 @@ import com.sharazan.security.core.AccountDetails
 import com.sharazan.security.core.Authentication
 
 class JwtAuthentication(
-    private val details: AccountDetails,
+    private val subject: String,
     private val authorities: Set<Authority>,
 ): Authentication {
 
-    override fun principal() = details
+    override fun principal() = subject
 
     override fun credentials() = ""
 
