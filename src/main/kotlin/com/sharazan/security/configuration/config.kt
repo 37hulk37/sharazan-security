@@ -2,6 +2,7 @@ package com.sharazan.security.configuration
 
 import com.sharazan.core.AppBuilder
 import com.sharazan.core.pipeline.Phase
+import com.sharazan.core.properties.ConfigurationSource
 import com.sharazan.http.core.Controller
 import com.sharazan.security.PasswordEncoder
 import com.sharazan.security.authentication.AuthenticationFilter
@@ -78,13 +79,14 @@ private fun AppBuilder.basicLogin() {
 }
 
 private fun AppBuilder.jwtLogin() {
-    val basicLoginModule = module {
-        single { SimpleJwtParser() }
+    val jwtLoginModule = module {
+        single { get<ConfigurationSource>().get<JwtProperties>("sharazan.security.jwt") }
+        single { SimpleJwtParser(get()) }
         single { JwtAuthenticationFilter(get()) }
         single { JwtAuthenticationProvider(get()) }
     }
 
-    addModule(basicLoginModule)
+    addModule(jwtLoginModule)
 }
 
 private fun login(module: Module) {
