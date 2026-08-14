@@ -4,6 +4,7 @@ import com.sharazan.security.authentication.AbstractAuthenticationProvider
 import com.sharazan.security.authentication.login.AccountAuthentication
 import com.sharazan.security.core.AccountDetailsService
 import com.sharazan.security.core.Authentication
+import com.sharazan.security.core.Authority
 
 class JwtAuthenticationProvider(
     private val accountDetailsService: AccountDetailsService
@@ -20,7 +21,7 @@ class JwtAuthenticationProvider(
 
         return AccountAuthentication(
             details,
-            details.authorities()
+            details.authorities().map(::Authority).toSet()
         )
     }
 

@@ -21,7 +21,7 @@ fun Request.hasAnyRole(vararg roles: String) {
         ?: throw AuthenticationException("Authentication not set")
 
     val authorities = roles.map(::Authority)
-    if (!authentication.authorities().containsAll(authorities)) {
+    if (authorities.none { it in authentication.authorities() }) {
         throw AccessDeniedException("There is no role for $roles")
     }
 }

@@ -1,40 +1,37 @@
 package com.sharazan.security.configuration
 
 import com.sharazan.security.authorization.registry.SecurityEndpointRegistry
-import com.sharazan.security.core.filter.RequestFilter
-import kotlin.reflect.KClass
+import java.util.concurrent.atomic.AtomicReference
 
-class HttpSecurity(
-    private val securityEndpointRegistry: SecurityEndpointRegistry
-) {
 
-    private val filters = mutableListOf<RequestFilter>()
+class HttpSecurity {
 
-    fun authorizeHttpRequests(
-        configure: AuthorizeHttpRequests.() -> Unit
-    ) {
-        AuthorizeHttpRequests(
-            securityEndpointRegistry
-        ).apply(configure)
+    private val authRef = AtomicReference<AuthMethod>(null)
+    private var authorizeConfig: (AuthorizeHttpRequests.() -> Unit)? = null
+
+
+    val auth: AuthMethod
+        get() = authRef.get()
+
+    fun basic() = apply {
+        authRef.compareAndSet(null, AuthMethod.BASIC)
     }
 
-    fun addFilter(filter: RequestFilter): HttpSecurity {
-        filters.add(filter)
-
-        return this
+    fun loginForm() = apply {
+        authRef.compareAndSet(null, AuthMethod.LOGIN_FORM)
     }
 
-    fun addFilterBefore(filter: RequestFilter, filterClass: KClass<*>): HttpSecurity {
-        val idx = filters.indexOfFirst { it::class == filterClass }
-        filters.add(idx, filter)
-
-        return this
+    fun jwt() = apply {
+        authRef.compareAndSet(null, AuthMethod.JWT)
     }
 
-    fun addFilterAfter(filter: RequestFilter, filterClass: KClass<*>): HttpSecurity {
-        val idx = filters.indexOfFirst { it::class == filterClass }
-        filters.add(idx + 1, filter)
+    fun authorizeHttpRequests(configure: AuthorizeHttpRequests.() -> Unit) = apply {
+        authorizeConfig = configure
+    }
 
-        return this
+    fun applyAuthorization(securityEndpointRegistry: SecurityEndpointRegistry) {
+        authorizeConfig?.let {
+            AuthorizeHttpRequests(securityEndpointRegistry).apply(it)
+        }
     }
 }

@@ -10,27 +10,15 @@ class AuthorizeHttpRequests(
     private val registry: SecurityEndpointRegistry
 ) {
 
-    fun requestMatchers(vararg patterns: String): RoleEndpointBuilder {
+    fun requestMatchers(vararg patterns: String): SecurityEndpointBuilder {
         val routes = patterns.map {
             registry.findRoute(UriTemplate.from(it))
         }
-        return RoleEndpointBuilder(routes)
+        return SecurityEndpointBuilder(routes)
     }
 
-    fun anyRequest(): RoleEndpointBuilder {
-        return RoleEndpointBuilder(registry.unregisteredRoutes())
-    }
-
-    inner class RoleEndpointBuilder(
-        private val routes: List<Route>,
-    ) {
-
-        fun hasRole(role: String): SecurityEndpointBuilder =
-            SecurityEndpointBuilder(routes, setOf(role))
-
-        fun hasAnyRole(vararg roles: String): SecurityEndpointBuilder =
-            SecurityEndpointBuilder(routes, roles.toSet())
-
+    fun anyRequest(): SecurityEndpointBuilder {
+        return SecurityEndpointBuilder(registry.unregisteredRoutes())
     }
 
     inner class SecurityEndpointBuilder(
@@ -38,15 +26,21 @@ class AuthorizeHttpRequests(
         private val roles: Set<String> = emptySet(),
     ) {
 
+        fun hasRole(role: String) =
+            SecurityEndpointBuilder(routes,setOf(role))
+
+        fun hasAnyRole(vararg roles: String) =
+            SecurityEndpointBuilder(routes, roles.toSet())
+
         fun permitAll(): AuthorizeHttpRequests =
             terminate(false)
 
         fun authenticated(): AuthorizeHttpRequests =
-            terminate(true, roles)
+            terminate(true)
 
-        private fun terminate(isSecured: Boolean, roles: Set<String> = emptySet()): AuthorizeHttpRequests {
+        private fun terminate(isSecured: Boolean): AuthorizeHttpRequests {
             registry.register(routes.map {
-                SecurityEndpoint(it, isSecured, roles.map { Authority(it) }.toSet())
+                SecurityEndpoint(it, isSecured, roles.map(::Authority).toSet())
             })
 
             return this@AuthorizeHttpRequests

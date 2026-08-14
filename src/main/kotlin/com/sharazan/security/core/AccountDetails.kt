@@ -6,7 +6,7 @@ interface AccountDetails {
 
     fun password(): String
 
-    fun authorities(): Set<Authority>
+    fun authorities(): Set<String>
 
     fun enabled(): Boolean
 

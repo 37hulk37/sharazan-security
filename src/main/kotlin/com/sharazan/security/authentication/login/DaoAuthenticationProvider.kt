@@ -6,6 +6,7 @@ import com.sharazan.security.authentication.login.AccountAuthentication
 import com.sharazan.security.authentication.exception.BadCredentialsException
 import com.sharazan.security.core.AccountDetailsService
 import com.sharazan.security.core.Authentication
+import com.sharazan.security.core.Authority
 
 class DaoAuthenticationProvider(
     private val accountDetailsService: AccountDetailsService,
@@ -26,7 +27,7 @@ class DaoAuthenticationProvider(
 
         return AccountAuthentication(
             details,
-            details.authorities()
+            details.authorities().map(::Authority).toSet()
         )
     }
 
