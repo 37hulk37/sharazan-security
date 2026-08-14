@@ -13,7 +13,7 @@ class AuthenticationInterceptor(
 
 
     override fun before(request: Request): Request {
-        logger.trace("Started processing request with filters")
+        logger.info("Started processing request with filters")
 
         return filters.fold(request) { current, filter ->
             filter.doFilter(current)

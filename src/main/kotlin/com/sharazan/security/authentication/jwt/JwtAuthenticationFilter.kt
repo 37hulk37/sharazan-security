@@ -10,7 +10,7 @@ import org.http4k.lens.bearerToken
 import java.time.Instant
 
 class JwtAuthenticationFilter(
-    private val jwtParser: JwtParser
+    private val jwtService: JwtService
 ): RequestFilter {
 
     override fun doFilter(r: Request): Request {
@@ -21,7 +21,7 @@ class JwtAuthenticationFilter(
             return r
         }
 
-        val parsedToken = jwtParser.parseToken(token)
+        val parsedToken = jwtService.parseToken(token)
             .takeIf {
                 it.expireAt.isAfter(Instant.now())
             }

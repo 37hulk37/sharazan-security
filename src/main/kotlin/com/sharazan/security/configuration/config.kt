@@ -13,7 +13,8 @@ import com.sharazan.security.authentication.anonymous.AnonymousAuthenticationPro
 import com.sharazan.security.authentication.anonymous.AnonymousFilter
 import com.sharazan.security.authentication.jwt.JwtAuthenticationFilter
 import com.sharazan.security.authentication.jwt.JwtAuthenticationProvider
-import com.sharazan.security.authentication.jwt.SimpleJwtParser
+import com.sharazan.security.authentication.jwt.JwtService
+import com.sharazan.security.authentication.jwt.SimpleJwtService
 import com.sharazan.security.authentication.login.BasicAuthenticationFilter
 import com.sharazan.security.authentication.login.DaoAuthenticationProvider
 import com.sharazan.security.authentication.login.LoginFormAuthenticationFilter
@@ -23,6 +24,7 @@ import com.sharazan.security.authorization.AuthorizationManager
 import com.sharazan.security.authorization.registry.SecurityEndpointRegistry
 import com.sharazan.security.session.*
 import org.koin.core.module.Module
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -43,6 +45,7 @@ fun AppBuilder.security(configure: HttpSecurity.() -> Unit = {}) = apply {
         single { AuthenticationFilter(get()) }
 
         single { AuthorizationManager(get()) }
+        single { AuthorizationFilter(get()) }
 
         registry(httpSecurity)
 
@@ -56,10 +59,7 @@ fun AppBuilder.security(configure: HttpSecurity.() -> Unit = {}) = apply {
 
 private fun AppBuilder.loginForm() {
     val loginFormModule = module {
-        single { InMemorySessionStore() }
-        single { LoginFormAuthenticationFilter() }
-
-        single { SessionCookieInterceptor() }
+        single { InMemorySessionStore() } bind SessionStore::class
     }
     login(loginFormModule)
 
@@ -68,10 +68,7 @@ private fun AppBuilder.loginForm() {
 
 private fun AppBuilder.basicLogin() {
     val basicLoginModule = module {
-        single { InMemorySessionStore() }
         single { BasicAuthenticationFilter() }
-
-        single { SessionCookieInterceptor() }
     }
     login(basicLoginModule)
 
@@ -81,9 +78,9 @@ private fun AppBuilder.basicLogin() {
 private fun AppBuilder.jwtLogin() {
     val jwtLoginModule = module {
         single { get<ConfigurationSource>().get<JwtProperties>("sharazan.security.jwt") }
-        single { SimpleJwtParser(get()) }
+        single { SimpleJwtService(get()) } bind JwtService::class
         single { JwtAuthenticationFilter(get()) }
-        single { JwtAuthenticationProvider(get()) }
+        single { JwtAuthenticationProvider(get()) } bind AuthenticationProvider::class
     }
 
     addModule(jwtLoginModule)
@@ -91,6 +88,8 @@ private fun AppBuilder.jwtLogin() {
 
 private fun login(module: Module) {
     module.apply {
+        single { SessionCookieInterceptor() }
+        single { InMemorySessionStore() } bind SessionStore::class
         single { DaoAuthenticationProvider(get(), get()) } bind AuthenticationProvider::class
         single { SessionAuthenticationFilter(get()) }
         single { SessionEstablishingFilter(get()) }
@@ -115,17 +114,20 @@ private fun Module.authenticationInterceptor(httpSecurity: HttpSecurity) {
                     add(get<SessionAuthenticationFilter>())
                     add(get<SessionEstablishingFilter>())
                 }
+
                 AuthMethod.BASIC -> {
                     add(get<BasicAuthenticationFilter>())
                     add(get<SessionAuthenticationFilter>())
                     add(get<SessionEstablishingFilter>())
                 }
+
                 AuthMethod.JWT -> add(get<JwtAuthenticationFilter>())
             }
 
             add(get<AnonymousFilter>())
             add(get<AuthenticationFilter>())
         }
+
         AuthenticationInterceptor(filters)
     }
 }
@@ -137,7 +139,7 @@ private fun Module.authorizationInterceptor() {
 }
 
 private fun Module.phases(httpSecurity: HttpSecurity) {
-    single {
+    single(named("authentication")) {
         val interceptors = buildList {
             add(get<AuthenticationInterceptor>())
             if (httpSecurity.auth == AuthMethod.LOGIN_FORM || httpSecurity.auth == AuthMethod.BASIC) {
@@ -145,7 +147,8 @@ private fun Module.phases(httpSecurity: HttpSecurity) {
             }
         }
         Phase("authentication", interceptors)
-    }
-    single { Phase("authorization", listOf(get<AuthorizationInterceptor>())) }
+    } bind Phase::class
+
+    single(named("authorization")) { Phase("authorization", listOf(get<AuthorizationInterceptor>())) } bind Phase::class
 }
 

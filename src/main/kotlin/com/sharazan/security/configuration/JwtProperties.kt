@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class JwtProperties(
-    val secret: String,
-    val expiration: Int = 20,
+    val secret: String = "secret",
+    val expiration: Long = 20,
 )

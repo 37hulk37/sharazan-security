@@ -7,12 +7,11 @@ import io.jsonwebtoken.security.Keys
 import java.time.Instant
 import java.util.*
 
-class SimpleJwtParser(
-    properties: JwtProperties,
-): JwtParser {
+class SimpleJwtService(
+    private val properties: JwtProperties,
+): JwtService {
 
     private val secretKey = Keys.hmacShaKeyFor(properties.secret.toByteArray())
-    private val expiration = properties.expiration.toLong()
 
 
     override fun parseToken(token: String): Token {
@@ -39,7 +38,7 @@ class SimpleJwtParser(
             .subject(details.username())
             .claim("roles", details.authorities().toList())
             .issuedAt(Date.from(now))
-            .expiration(Date.from(now.plusSeconds(expiration * 60)))
+            .expiration(Date.from(now.plusSeconds(properties.expiration * 60)))
             .signWith(secretKey)
             .compact()
     }
