@@ -17,15 +17,20 @@ class SessionEstablishingFilter(
             return r
         }
 
-        val existingSessionId = r.cookie(SessionCookie.NAME)?.value
-        val existingSession = existingSessionId?.let { sessionStore.find(it) }
-        if (existingSession != null && !existingSession.isExpired()) {
+        val existingSessionId = r.cookie(SessionCookie.SESSION_ID)?.value
+        val existingSession = existingSessionId?.let {
+            sessionStore.find(it)
+        }
+        if (isSessionAlive(existingSession)) {
             return r
         }
 
         val session = sessionStore.create(authentication)
 
-        return r.withContext(SessionCookie.NEW_SESSION_CONTEXT_KEY, session.id)
+        return r.withContext(SessionCookie.SESSION_CONTEXT_KEY, session)
     }
+
+    private fun isSessionAlive(session: Session?): Boolean =
+        session != null && !session.isExpired()
 
 }

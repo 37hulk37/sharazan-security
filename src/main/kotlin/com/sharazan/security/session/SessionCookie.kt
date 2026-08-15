@@ -2,8 +2,8 @@ package com.sharazan.security.session
 
 object SessionCookie {
 
-    const val NAME = "SESSION_ID"
+    const val SESSION_ID = "SESSION_ID"
 
-    const val NEW_SESSION_CONTEXT_KEY = "new-session-id"
+    const val SESSION_CONTEXT_KEY = "session-id"
 
 }

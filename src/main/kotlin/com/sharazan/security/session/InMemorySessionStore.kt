@@ -12,6 +12,7 @@ class InMemorySessionStore(
 
     private val sessions = ConcurrentHashMap<String, Session>()
 
+
     override fun create(authentication: Authentication): Session {
         val session = Session(
             id = UUID.randomUUID().toString(),
@@ -23,7 +24,8 @@ class InMemorySessionStore(
         return session
     }
 
-    override fun find(id: String): Session? = sessions[id]
+    override fun find(id: String): Session? =
+        sessions[id]
 
     override fun invalidate(id: String) {
         sessions.remove(id)

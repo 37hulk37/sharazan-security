@@ -31,6 +31,8 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("io.insert-koin:koin-test:4.0.0")
     testImplementation("io.insert-koin:koin-test-junit5:4.0.0")
+    testImplementation("io.mockk:mockk:1.13.13")
+    testImplementation("org.slf4j:slf4j-simple:2.0.9")
 }
 
 kotlin {
@@ -54,4 +56,6 @@ publishing {
 
 tasks.test {
     useJUnitPlatform()
+    systemProperty("net.bytebuddy.experimental", "true")
+    jvmArgs("-XX:+EnableDynamicAgentLoading")
 }

@@ -121,11 +121,14 @@ private fun Scope.authenticationFilters(httpSecurity: HttpSecurity) = buildList 
 
     if (httpSecurity.usesSessionCookie) {
         add(get<SessionAuthenticationFilter>())
-        add(get<SessionEstablishingFilter>())
     }
 
     add(get<AnonymousAuthenticationFilter>())
     add(get<AuthenticationFilter>())
+
+    if (httpSecurity.usesSessionCookie) {
+        add(get<SessionEstablishingFilter>())
+    }
 }
 
 private fun Module.authorizationInterceptor() {

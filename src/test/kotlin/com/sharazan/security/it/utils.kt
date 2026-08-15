@@ -1,6 +1,7 @@
 package com.sharazan.security.it
 
 import com.sharazan.core.exception.ApplicationException
+import com.sharazan.security.PasswordEncoder
 import com.sharazan.security.authentication.jwt.SimpleJwtService
 import com.sharazan.security.configuration.JwtProperties
 import com.sharazan.security.core.AccountDetails
@@ -44,8 +45,9 @@ fun accountDetails(
 }
 
 
-fun accountDetailsService(accounts: List<AccountDetails> = emptyList())
-    = object : AccountDetailsService {
+fun accountDetailsService(
+    accounts: List<AccountDetails> = emptyList(),
+) = object : AccountDetailsService {
 
     override fun getUser(username: String): AccountDetails =
         accounts.firstOrNull { it.username() == username }

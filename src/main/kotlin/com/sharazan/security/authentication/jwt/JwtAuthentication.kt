@@ -17,6 +17,6 @@ class JwtAuthentication(
 
     override fun authorities() = authorities
 
-    override fun isAuthenticated(): Boolean = true
+    override fun isAuthenticated(): Boolean = false
 
 }

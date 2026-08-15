@@ -10,7 +10,7 @@ class SessionAuthenticationFilter(
 ): RequestFilter {
 
     override fun doFilter(r: Request): Request {
-        val sessionId = r.cookie(SessionCookie.NAME)?.value
+        val sessionId = r.cookie(SessionCookie.SESSION_ID)?.value
             ?: return r
         val session = sessionStore.find(sessionId)
             ?: return r

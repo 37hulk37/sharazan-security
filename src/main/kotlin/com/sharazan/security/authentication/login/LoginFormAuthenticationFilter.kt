@@ -4,6 +4,8 @@ import com.sharazan.core.withContext
 import com.sharazan.security.core.filter.RequestFilter
 import org.http4k.core.Request
 import org.http4k.core.body.form
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 class LoginFormAuthenticationFilter: RequestFilter {
 
@@ -15,12 +17,10 @@ class LoginFormAuthenticationFilter: RequestFilter {
 
         val authentication = UsernamePasswordAuthentication(
             username = username,
-            password = password
+            password = password,
         )
 
-        return r.withContext(
-            "authentication",
-            authentication
-        )
+        return r.withContext("authentication", authentication)
     }
+
 }
