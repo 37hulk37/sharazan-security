@@ -1,5 +1,8 @@
 # sharazan-security
 
+[![](https://jitpack.io/v/37hulk37/sharazan-security.svg)](https://jitpack.io/#37hulk37/sharazan-security)
+
+
 **Sharazan** — модульный бэкенд-фреймворк на Kotlin, вдохновлённый архитектурой Ktor (declare-then-start композиция через Koin, без Spring-магии).
 
 **security** — hand-rolled, Spring-Security-inspired модуль аутентификации/авторизации: Basic/Form/JWT-логин, cookie-based сессии, ролевая авторизация через `AuthorizeHttpRequests` DSL.

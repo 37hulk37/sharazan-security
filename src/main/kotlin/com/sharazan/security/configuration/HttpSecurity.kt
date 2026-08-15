@@ -1,6 +1,7 @@
 package com.sharazan.security.configuration
 
-import com.sharazan.core.properties.ConfigurationSource
+import com.sharazan.core.source.ConfigurationSource
+import com.sharazan.core.source.get
 import com.sharazan.security.authorization.registry.SecurityEndpointRegistry
 import org.koin.core.scope.Scope
 import java.util.concurrent.atomic.AtomicReference
@@ -38,7 +39,9 @@ class HttpSecurity {
     }
 
     fun jwtProperties(): Scope.() -> JwtProperties =
-        jwtPropsProvider ?: { get<ConfigurationSource>().get<JwtProperties>("sharazan.security.jwt") }
+        jwtPropsProvider ?: {
+            get<ConfigurationSource>().get<JwtProperties>("sharazan.security.jwt")
+        }
 
     fun authorizeHttpRequests(configure: AuthorizeHttpRequests.() -> Unit) = apply {
         authorizeConfig = configure
