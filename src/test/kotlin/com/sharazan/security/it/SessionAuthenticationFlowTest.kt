@@ -36,13 +36,14 @@ import org.http4k.core.body.form
 import org.http4k.core.cookie.cookie
 import org.http4k.core.cookie.cookies
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.extension.RegisterExtension
 import org.koin.core.component.get
+import org.koin.core.module.Module
 import org.koin.dsl.module
-import org.koin.test.KoinTest
 import org.koin.test.inject
-import org.koin.test.junit5.KoinTestExtension
 import org.koin.test.mock.declare
+import support.KoinFlowTest
+import support.accountDetails
+import support.accountDetailsService
 import java.time.Duration
 import kotlin.io.encoding.Base64
 import kotlin.test.Test
@@ -51,13 +52,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class SessionAuthenticationFlowTest : KoinTest {
-
-    @JvmField
-    @RegisterExtension
-    val koinTestExtension = KoinTestExtension.create {
-        modules(koinModule())
-    }
+class SessionAuthenticationFlowTest: KoinFlowTest() {
 
     private val sessionStore: SessionStore by inject()
 
@@ -69,7 +64,7 @@ class SessionAuthenticationFlowTest : KoinTest {
 
 
     @BeforeEach
-    fun setUp() {
+    fun beforeEach() {
         val details = accountDetails("hulk", passwordEncoder.encode("password"))
         declare<AccountDetailsService> {
             accountDetailsService(listOf(details))
@@ -249,7 +244,7 @@ class SessionAuthenticationFlowTest : KoinTest {
         request().cookie(SessionCookie.SESSION_ID, sessionId)
 
 
-    private fun koinModule() = module {
+    override fun koinModule(): Module = module {
         single { PasswordEncoder() }
         single<SessionStore> { InMemorySessionStore() }
         single { LoginFormAuthenticationFilter() }

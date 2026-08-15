@@ -3,20 +3,31 @@ package com.sharazan.security.it
 import com.sharazan.core.getContextOrNull
 import com.sharazan.security.authentication.jwt.JwtAuthentication
 import com.sharazan.security.authentication.jwt.JwtAuthenticationFilter
+import com.sharazan.security.authentication.jwt.JwtService
 import com.sharazan.security.core.AuthenticationException
 import io.jsonwebtoken.JwtException
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Uri
+import org.junit.jupiter.api.extension.RegisterExtension
+import org.koin.dsl.module
+import org.koin.test.KoinTest
+import org.koin.test.inject
+import org.koin.test.junit5.KoinTestExtension
+import support.KoinFlowTest
+import support.accountDetails
+import support.createJwt
+import support.jwtService
 import java.lang.Exception
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class JwtAuthenticationFilterTest {
+class JwtAuthenticationFilterTest: KoinFlowTest() {
 
-    private val filter = JwtAuthenticationFilter(jwtService())
+
+    private val filter: JwtAuthenticationFilter by inject()
 
 
     @Test
@@ -74,5 +85,11 @@ class JwtAuthenticationFilterTest {
     private fun bearer(token: String) =
         request()
             .header("Authorization", "Bearer $token")
+
+
+    override fun koinModule() = module {
+        single<JwtService> { jwtService() }
+        single { JwtAuthenticationFilter(get()) }
+    }
 
 }

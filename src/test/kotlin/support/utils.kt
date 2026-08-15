@@ -1,7 +1,6 @@
-package com.sharazan.security.it
+package support
 
 import com.sharazan.core.exception.ApplicationException
-import com.sharazan.security.PasswordEncoder
 import com.sharazan.security.authentication.jwt.SimpleJwtService
 import com.sharazan.security.configuration.JwtProperties
 import com.sharazan.security.core.AccountDetails
