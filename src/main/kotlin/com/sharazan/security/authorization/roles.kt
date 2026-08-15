@@ -1,7 +1,7 @@
 package com.sharazan.security.authorization
 
 import com.sharazan.core.getContextOrNull
-import com.sharazan.security.core.AccessDeniedException
+import com.sharazan.security.exception.AccessDeniedException
 import com.sharazan.security.core.Authentication
 import com.sharazan.security.core.AuthenticationException
 import com.sharazan.security.core.Authority

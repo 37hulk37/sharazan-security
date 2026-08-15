@@ -1,7 +1,7 @@
 package com.sharazan.security.authentication.login
 
 import com.sharazan.core.withContext
-import com.sharazan.security.authentication.exception.BadCredentialsException
+import com.sharazan.security.exception.BadCredentialsException
 import com.sharazan.security.core.Authentication
 import com.sharazan.security.core.filter.RequestFilter
 import org.http4k.core.Request

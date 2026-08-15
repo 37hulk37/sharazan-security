@@ -1,4 +1,4 @@
-package com.sharazan.security.authentication.exception
+package com.sharazan.security.exception
 
 import com.sharazan.security.core.AuthenticationException
 

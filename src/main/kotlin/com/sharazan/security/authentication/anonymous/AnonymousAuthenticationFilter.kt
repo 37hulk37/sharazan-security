@@ -6,7 +6,7 @@ import com.sharazan.security.core.Authentication
 import com.sharazan.security.core.filter.RequestFilter
 import org.http4k.core.Request
 
-class AnonymousFilter: RequestFilter {
+class AnonymousAuthenticationFilter: RequestFilter {
 
     override fun doFilter(r: Request): Request {
         if (r.getContextOrNull<Authentication>("authentication") != null) {

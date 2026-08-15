@@ -1,14 +1,14 @@
 package com.sharazan.security.authorization
 
 import com.sharazan.security.authorization.registry.SecurityEndpointRegistry
-import com.sharazan.security.core.AccessDeniedException
+import com.sharazan.security.exception.AccessDeniedException
 import com.sharazan.security.core.Authentication
 import com.sharazan.security.core.AuthenticationException
 import com.sharazan.security.core.Authority
 import org.http4k.core.Request
 
 class AuthorizationManager(
-    private val endpointRegistry: SecurityEndpointRegistry,
+private val endpointRegistry: SecurityEndpointRegistry,
 ) {
 
     fun authorize(authentication: Authentication, request: Request): Authentication {

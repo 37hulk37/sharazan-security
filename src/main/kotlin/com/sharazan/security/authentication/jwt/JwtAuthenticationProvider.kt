@@ -16,7 +16,6 @@ class JwtAuthenticationProvider(
 
     override fun authenticate(authentication: Authentication): Authentication {
         val details = accountDetailsService.getUser(authentication.principal() as String)
-
         check(details)
 
         return AccountAuthentication(

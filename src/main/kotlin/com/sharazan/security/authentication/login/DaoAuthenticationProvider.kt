@@ -2,8 +2,7 @@ package com.sharazan.security.authentication.login
 
 import com.sharazan.security.PasswordEncoder
 import com.sharazan.security.authentication.AbstractAuthenticationProvider
-import com.sharazan.security.authentication.login.AccountAuthentication
-import com.sharazan.security.authentication.exception.BadCredentialsException
+import com.sharazan.security.exception.BadCredentialsException
 import com.sharazan.security.core.AccountDetailsService
 import com.sharazan.security.core.Authentication
 import com.sharazan.security.core.Authority
@@ -18,7 +17,6 @@ class DaoAuthenticationProvider(
 
     override fun authenticate(authentication: Authentication): Authentication {
         val details = accountDetailsService.getUser(authentication.principal() as String)
-
         check(details)
 
         if (!passwordEncoder.matches(authentication.credentials(), details.password())) {

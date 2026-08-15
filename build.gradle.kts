@@ -29,6 +29,8 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
     testImplementation(kotlin("test"))
+    testImplementation("io.insert-koin:koin-test:4.0.0")
+    testImplementation("io.insert-koin:koin-test-junit5:4.0.0")
 }
 
 kotlin {

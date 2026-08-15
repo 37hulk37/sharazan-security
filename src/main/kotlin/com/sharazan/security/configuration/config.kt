@@ -9,7 +9,7 @@ import com.sharazan.security.authentication.AuthenticationInterceptor
 import com.sharazan.security.authentication.AuthenticationManager
 import com.sharazan.security.authentication.AuthenticationProvider
 import com.sharazan.security.authentication.anonymous.AnonymousAuthenticationProvider
-import com.sharazan.security.authentication.anonymous.AnonymousFilter
+import com.sharazan.security.authentication.anonymous.AnonymousAuthenticationFilter
 import com.sharazan.security.authentication.jwt.JwtAuthenticationFilter
 import com.sharazan.security.authentication.jwt.JwtAuthenticationProvider
 import com.sharazan.security.authentication.jwt.JwtService
@@ -33,7 +33,7 @@ fun AppBuilder.security(configure: HttpSecurity.() -> Unit = {}) = apply {
 
     val securityModule = module {
         single { PasswordEncoder() }
-        single { AnonymousFilter() }
+        single { AnonymousAuthenticationFilter() }
         single { AnonymousAuthenticationProvider() } bind AuthenticationProvider::class
         single { AuthenticationManager(getAll()) }
         single { AuthenticationFilter(get()) }
@@ -124,7 +124,7 @@ private fun Scope.authenticationFilters(httpSecurity: HttpSecurity) = buildList 
         add(get<SessionEstablishingFilter>())
     }
 
-    add(get<AnonymousFilter>())
+    add(get<AnonymousAuthenticationFilter>())
     add(get<AuthenticationFilter>())
 }
 

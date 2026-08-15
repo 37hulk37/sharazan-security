@@ -13,7 +13,9 @@ class SimpleJwtService(
 
     private val secretKey = Keys.hmacShaKeyFor(properties.secret.toByteArray())
 
-
+    /*
+    * throws JwtException when token is expired
+    */
     override fun parseToken(token: String): Token {
         val claims = Jwts.parser()
             .verifyWith(secretKey)
@@ -25,9 +27,9 @@ class SimpleJwtService(
             .filterIsInstance<String>()
 
         return Token(
-            subject = claims.subject,
-            expireAt = claims.expiration.toInstant(),
-            roles = roles,
+            claims.subject,
+            claims.expiration.toInstant(),
+            roles,
         )
     }
 
