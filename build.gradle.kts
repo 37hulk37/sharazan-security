@@ -7,7 +7,7 @@ plugins {
 group = "com.sharazan"
 version = "1.0-SNAPSHOT"
 
-val gitVersion: String = System.getenv("VERSION") ?: try {
+val gitVersion: String = try {
     providers.exec {
         commandLine("git", "describe", "--tags", "--abbrev=0")
     }.standardOutput.asText.get().trim()
